@@ -12,6 +12,7 @@ import android.telephony.SmsMessage;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -21,6 +22,7 @@ import java.util.HashMap;
 public class Receiver extends BroadcastReceiver {
     private String TAG = Receiver.class.getSimpleName();
 
+    //ConnectivityManager cm;
     String formattedText;
     String sender;
     String phoneNumber;
@@ -51,14 +53,7 @@ public class Receiver extends BroadcastReceiver {
                     smsMessageStr += message + "\n";
 
                     Toast.makeText(context, formattedText, Toast.LENGTH_LONG).show();
-
-                    //this will update the UI with message
-
-
-                    //this function below will execute after message come,
-                    //inserting sender number and message body
-                    //to MySql Database
-                    ConnectivityManager cm = (ConnectivityManager) context.getSystemService(
+                    /*cm = (ConnectivityManager) context.getSystemService(
                             Context.CONNECTIVITY_SERVICE
                     );
                     activeNetwork = cm.getActiveNetworkInfo();
@@ -66,22 +61,11 @@ public class Receiver extends BroadcastReceiver {
 
                     if (connectivityReceiverListener != null) {
                         connectivityReceiverListener.onNetworkConnectionChnged(isConnected);
-                    }
+                    }*/
 
-                    if (activeNetwork != null && activeNetwork.isConnectedOrConnecting()) {
-                        //if (sender.equals("+6289655720330") || sender.equals("089655720330")) {
-                        try {
-                            MainActivity inst = MainActivity.instance();
-                            inst.updateList(formattedText);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        sendToDbase(context, sender, message);
-                        //}
+                    proccessMessage(message, context);
 
-                    } else {
-                        Toast.makeText(context, "No Connection", Toast.LENGTH_LONG).show();
-                    }
+
                 }
             } else {
                 Log.e(TAG, "null array");
@@ -90,6 +74,77 @@ public class Receiver extends BroadcastReceiver {
 
 
         }
+    }
+
+    private void proccessMessage(String message, Context context) {
+        String formatTransaksi;
+
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(
+                Context.CONNECTIVITY_SERVICE
+        );
+        activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+
+        if (connectivityReceiverListener != null) {
+            connectivityReceiverListener.onNetworkConnectionChnged(isConnected);
+        }
+
+        if (message.contains("SUKSES")) {
+            int start = message.indexOf(".3003") - 18;
+            int end = message.indexOf(".3003") + 5;
+            String kode = message.substring(start, end);
+            String[] arrayKodeA = kode.split("\\s");
+            if (arrayKodeA.length > 1) {
+                formatTransaksi = arrayKodeA[1];
+            } else {
+                formatTransaksi = arrayKodeA[0];
+            }
+
+            if (activeNetwork != null && activeNetwork.isConnectedOrConnecting()) {
+
+                try {
+                    MainActivity inst = MainActivity.instance();
+                    inst.updateList(formattedText);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                sendToDbase(context, sender, formatTransaksi);
+
+            } else {
+                Toast.makeText(context, "No Connection", Toast.LENGTH_LONG).show();
+            }
+        } else if (message.contains("tipe kartu")) {
+            //formatTransaksi = "";
+            int start = message.indexOf(".3003") - 18;
+            int end = message.indexOf(".3003") + 5;
+            String kode = message.substring(start, end);
+            String[] arrayKodeA = kode.split("\\s");
+            if (arrayKodeA.length > 1) {
+                formatTransaksi = arrayKodeA[1]+" transaksi gagal";
+            } else {
+                formatTransaksi = arrayKodeA[0]+" transaksi gagal";
+            }
+
+            if (activeNetwork != null && activeNetwork.isConnectedOrConnecting()) {
+
+                try {
+                    MainActivity inst = MainActivity.instance();
+                    inst.updateList(formattedText);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                sendToDbase(context, sender, formatTransaksi);
+
+            } else {
+                Toast.makeText(context, "No Connection", Toast.LENGTH_LONG).show();
+            }
+        } else {
+            Log.d("TAG", "Bukan Sms Transaksi");
+        }
+
+
     }
 
     //function for send message info to MySql Database

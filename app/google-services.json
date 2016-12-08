@@ -1,0 +1,102 @@
+{
+  "project_info": {
+    "project_number": "1003648665919",
+    "firebase_url": "https://smart-pulsa.firebaseio.com",
+    "project_id": "smart-pulsa",
+    "storage_bucket": "smart-pulsa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1003648665919:android:fe73d68b82e233b3",
+        "android_client_info": {
+          "package_name": "com.dtech.smartpulsa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1003648665919-nq3mc253rgajkatreggb3t0mpogrmq58.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dtech.smartpulsa",
+            "certificate_hash": "EDFB9FB1A845D42A428B921D3B00C9765DC6F9D0"
+          }
+        },
+        {
+          "client_id": "1003648665919-2b3r15j40vt1tjmu7hsad7njgi8dtmbd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dtech.smartpulsa",
+            "certificate_hash": "80806F978AE2CE0A174CA75A4E91F8E0D5201060"
+          }
+        },
+        {
+          "client_id": "1003648665919-1dcuht955rmlsg1cnccpfboi2kes37ot.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "1003648665919-cvki67ui9pfee7m54mj1qnjthrljj60h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAM2tXuNgKlajaPaSjZ87ESjKORtCMVOeo"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1003648665919-1dcuht955rmlsg1cnccpfboi2kes37ot.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1003648665919:android:67b9e5ffae31e00e",
+        "android_client_info": {
+          "package_name": "com.dtech.myapplication"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1003648665919-1dcuht955rmlsg1cnccpfboi2kes37ot.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "1003648665919-cvki67ui9pfee7m54mj1qnjthrljj60h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAM2tXuNgKlajaPaSjZ87ESjKORtCMVOeo"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
