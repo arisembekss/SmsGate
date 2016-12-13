@@ -36,6 +36,9 @@
                     android:port="6734" />-->
             </intent-filter>
         </receiver>
+        <!--<service android:name=".FirebaseAdmin">
+
+        </service>-->
     </application>
 
 </manifest>
