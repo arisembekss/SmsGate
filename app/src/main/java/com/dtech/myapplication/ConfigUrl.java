@@ -10,6 +10,7 @@ public class ConfigUrl {
                                              //for example : http://samimi.web.id/dev/add-code.php
                                              //my PHP file are -> add-code.php
 
+    public static final String URL_TAGIHAN = "http://samimi.web.id/dev/admin/fbase-tagihan.php";
     //this parts are POST Request variables (take a look on my add-code.php in Documentation
     public static final String KEY_NAME = "name";//this is variable for POST Request: $_POST['name']
     public static final String KEY_KODE = "kode";//this is variable for POST Request: $_POST['kode']

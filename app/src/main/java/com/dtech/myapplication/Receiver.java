@@ -78,6 +78,10 @@ public class Receiver extends BroadcastReceiver {
 
     private void proccessMessage(String message, Context context) {
         String formatTransaksi;
+        int start = message.indexOf(".3003") - 18;
+        int end = message.indexOf(".3003") + 5;
+        String kode = message.substring(start, end);
+        String[] arrayKodeA = kode.split("\\s");
 
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(
                 Context.CONNECTIVITY_SERVICE
@@ -90,10 +94,7 @@ public class Receiver extends BroadcastReceiver {
         }
 
         if (message.contains("SUKSES")) {
-            int start = message.indexOf(".3003") - 18;
-            int end = message.indexOf(".3003") + 5;
-            String kode = message.substring(start, end);
-            String[] arrayKodeA = kode.split("\\s");
+
             if (arrayKodeA.length > 1) {
                 formatTransaksi = arrayKodeA[1];
             } else {
@@ -116,10 +117,6 @@ public class Receiver extends BroadcastReceiver {
             }
         } else if (message.contains("tipe kartu")) {
             //formatTransaksi = "";
-            int start = message.indexOf(".3003") - 18;
-            int end = message.indexOf(".3003") + 5;
-            String kode = message.substring(start, end);
-            String[] arrayKodeA = kode.split("\\s");
             if (arrayKodeA.length > 1) {
                 formatTransaksi = arrayKodeA[1]+" transaksi gagal";
             } else {
@@ -140,11 +137,55 @@ public class Receiver extends BroadcastReceiver {
             } else {
                 Toast.makeText(context, "No Connection", Toast.LENGTH_LONG).show();
             }
+        } else if (message.contains("idPel:")) {
+            sendToDbaseTagihan(context, message);
+
         } else {
             Log.d("TAG", "Bukan Sms Transaksi");
         }
 
 
+
+
+    }
+
+    private void sendToDbaseTagihan(final Context context, final String message) {
+
+        class sendMessageTagihan extends AsyncTask<Void, Void, String> {
+
+
+            @Override
+            protected String doInBackground(Void... params) {
+                HashMap<String, String> parameters = new HashMap<>();
+                parameters.put(ConfigUrl.KEY_NAME, sender);
+                parameters.put(ConfigUrl.KEY_KODE, message);
+
+                RequestHandler requestHandler = new RequestHandler();
+                String resultsend = requestHandler.sendPostRequest(ConfigUrl.URL_TAGIHAN, parameters);
+                return resultsend;
+            }
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+
+
+            }
+
+            @Override
+            protected void onPostExecute(String s) {
+                super.onPostExecute(s);
+
+                Toast.makeText(context, "Success adding to database", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        if (activeNetwork != null && activeNetwork.isConnectedOrConnecting()) {
+            sendMessageTagihan sendmTagihan = new sendMessageTagihan();
+            sendmTagihan.execute();
+        } else {
+            Toast.makeText(context, "No Connection", Toast.LENGTH_LONG).show();
+        }
     }
 
     //function for send message info to MySql Database
@@ -161,8 +202,8 @@ public class Receiver extends BroadcastReceiver {
                 parameters.put(ConfigUrl.KEY_KODE, message);
 
                 RequestHandler requestHandler = new RequestHandler();
-                String result = requestHandler.sendPostRequest(ConfigUrl.URL_TEST, parameters);
-                return result;
+                String resultsend = requestHandler.sendPostRequest(ConfigUrl.URL_TEST, parameters);
+                return resultsend;
             }
 
             @Override
