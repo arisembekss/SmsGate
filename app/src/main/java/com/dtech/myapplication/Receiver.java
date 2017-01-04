@@ -80,8 +80,10 @@ public class Receiver extends BroadcastReceiver {
         String formatTransaksi;
         int start = message.indexOf(".3003") - 18;
         int end = message.indexOf(".3003") + 5;
-        String kode = message.substring(start, end);
-        String[] arrayKodeA = kode.split("\\s");
+        /*String kode = message.substring(start, end);
+        String[] arrayKodeA = kode.split("\\s");*/
+        String kode;
+        String[] arrayKodeA;
 
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(
                 Context.CONNECTIVITY_SERVICE
@@ -95,6 +97,8 @@ public class Receiver extends BroadcastReceiver {
 
         if (message.contains("SUKSES")) {
 
+            kode = message.substring(start, end);
+            arrayKodeA = kode.split("\\s");
             if (arrayKodeA.length > 1) {
                 formatTransaksi = arrayKodeA[1];
             } else {
@@ -117,6 +121,8 @@ public class Receiver extends BroadcastReceiver {
             }
         } else if (message.contains("tipe kartu")) {
             //formatTransaksi = "";
+            kode = message.substring(start, end);
+            arrayKodeA = kode.split("\\s");
             if (arrayKodeA.length > 1) {
                 formatTransaksi = arrayKodeA[1]+" transaksi gagal";
             } else {
@@ -137,8 +143,39 @@ public class Receiver extends BroadcastReceiver {
             } else {
                 Toast.makeText(context, "No Connection", Toast.LENGTH_LONG).show();
             }
-        } else if (message.contains("idPel:")) {
-            sendToDbaseTagihan(context, message);
+        } else if (message.contains("IdPel:")) {
+            if (activeNetwork != null && activeNetwork.isConnectedOrConnecting()) {
+
+                try {
+                    MainActivity inst = MainActivity.instance();
+                    inst.updateList(formattedText);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                sendToDbaseTagihan(context, message, "tagihan");
+
+            } else {
+                Toast.makeText(context, "No Connection", Toast.LENGTH_LONG).show();
+            }
+
+
+        } else if (message.contains("KodeToken:")) {
+            if (activeNetwork != null && activeNetwork.isConnectedOrConnecting()) {
+
+                try {
+                    MainActivity inst = MainActivity.instance();
+                    inst.updateList(formattedText);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                sendToDbaseTagihan(context, message, "token");
+
+            } else {
+                Toast.makeText(context, "No Connection", Toast.LENGTH_LONG).show();
+            }
+
 
         } else {
             Log.d("TAG", "Bukan Sms Transaksi");
@@ -149,7 +186,7 @@ public class Receiver extends BroadcastReceiver {
 
     }
 
-    private void sendToDbaseTagihan(final Context context, final String message) {
+    private void sendToDbaseTagihan(final Context context, final String message, final String post) {
 
         class sendMessageTagihan extends AsyncTask<Void, Void, String> {
 
@@ -157,8 +194,17 @@ public class Receiver extends BroadcastReceiver {
             @Override
             protected String doInBackground(Void... params) {
                 HashMap<String, String> parameters = new HashMap<>();
-                parameters.put(ConfigUrl.KEY_NAME, sender);
-                parameters.put(ConfigUrl.KEY_KODE, message);
+                if (post.contains("tagihan")) {
+                    parameters.put(ConfigUrl.POST_TAGIHAN, post);
+                    parameters.put(ConfigUrl.KEY_MESSAGE, message);
+                } else if (post.contains("token")) {
+                    parameters.put(ConfigUrl.POST_TOKEN, post);
+                    parameters.put(ConfigUrl.KEY_MESSAGE, message);
+                } else if (post.contains("voucher")) {
+                    parameters.put(ConfigUrl.POST_VOUCHER, post);
+                    parameters.put(ConfigUrl.KEY_MESSAGE, message);
+                }
+
 
                 RequestHandler requestHandler = new RequestHandler();
                 String resultsend = requestHandler.sendPostRequest(ConfigUrl.URL_TAGIHAN, parameters);
