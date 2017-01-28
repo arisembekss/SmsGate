@@ -177,6 +177,23 @@ public class Receiver extends BroadcastReceiver {
             }
 
 
+        } else if (message.contains("Voucher")) {
+            if (activeNetwork != null && activeNetwork.isConnectedOrConnecting()) {
+
+                try {
+                    MainActivity inst = MainActivity.instance();
+                    inst.updateList(formattedText);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                sendToDbaseTagihan(context, message, "voucher");
+
+            } else {
+                Toast.makeText(context, "No Connection", Toast.LENGTH_LONG).show();
+            }
+
+
         } else {
             Log.d("TAG", "Bukan Sms Transaksi");
         }
