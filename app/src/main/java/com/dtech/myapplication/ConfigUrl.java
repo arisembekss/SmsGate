@@ -6,6 +6,8 @@ package com.dtech.myapplication;
 
 public class ConfigUrl {
 
+    public static final String PREF_NAME = "app-welcome";
+    public static final String DISPLAY_FIREBASE_ID = "firebaseId";
     public static final String URL_TEST = "http://samimi.web.id/dev/admin/update-log-transaksi.php";//here you can input location of your PHP file
                                              //for example : http://samimi.web.id/dev/add-code.php
                                              //my PHP file are -> add-code.php
