@@ -3,10 +3,12 @@
     package="com.dtech.myapplication">
 
     <uses-permission android:name="android.permission.RECEIVE_SMS"/>
+    <uses-permission android:name="android.permission.SEND_SMS"/>
     <uses-permission android:name="android.permission.READ_SMS"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <application
+        android:name=".MyApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -30,12 +32,21 @@
             <intent-filter android:priority="999" >
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+                <action android:name="com.myapp.myaction" />
+                <!--<action android:name="android.provider.Telephony."-->
                 <!--<data
                     android:scheme="sms"
                     android:host="*"
                     android:port="6734" />-->
             </intent-filter>
         </receiver>
+
+        <receiver android:name=".SmsSentReceiver"
+            android:enabled="true"
+            android:exported="true">
+
+        </receiver>
+        <receiver android:name=".SmsDeliveredReceiver"/>
         <!--<service android:name=".FirebaseAdmin">
 
         </service>-->

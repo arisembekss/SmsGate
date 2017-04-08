@@ -1,16 +1,26 @@
 package com.dtech.myapplication;
 
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -34,7 +44,7 @@ public class Receiver extends BroadcastReceiver {
     }
 
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(final Context context, Intent intent) {
         Bundle intentExtras = intent.getExtras();
         if (intentExtras != null) {
             Object[] sms = (Object[]) intentExtras.get("pdus");
@@ -69,16 +79,38 @@ public class Receiver extends BroadcastReceiver {
                 }
             } else {
                 Log.e(TAG, "null array");
+
             }
-
-
-
         }
+
+        String action = intent.getAction();
+        if(action.equals("com.myapp.myaction")){
+            String state = intent.getExtras().getString("extra");
+            Toast.makeText(context, state, Toast.LENGTH_LONG).show();
+            //MyApp.getInstance().unregisterReceiver(this);
+        }
+
     }
 
+    public void sendSmsTrx(Context context, String trx) {
+        String SENT_SMS_FLAG = "thus";
+        Toast.makeText(context, trx, Toast.LENGTH_LONG).show();
+        String nomorr = "089678382795";
+        SmsManager smss = SmsManager.getDefault();
+        Intent intent = new Intent();
+        PendingIntent sentIntent = PendingIntent.getBroadcast(context, 0,
+                intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        MyApp.getInstance().registerReceiver(new MessageListener(), new IntentFilter(SENT_SMS_FLAG));
+        //PendingIntent pendingIntent = PendingIntent.getService(context,)
+        smss.sendTextMessage(nomorr, null, trx, sentIntent, null);
+        /*Uri uri = Uri.parse("smsto:089678382795");
+        Intent i = new Intent(Intent.ACTION_SENDTO, uri);
+        i.putExtra("smsbody", "tess");
+        context.startService(i);*/
+    }
     private void proccessMessage(String message, Context context) {
         String formatTransaksi;
-        int start = message.indexOf(".3003") - 18;
+        int start = message.indexOf(".3003") - 22;
         int end = message.indexOf(".3003") + 5;
         /*String kode = message.substring(start, end);
         String[] arrayKodeA = kode.split("\\s");*/

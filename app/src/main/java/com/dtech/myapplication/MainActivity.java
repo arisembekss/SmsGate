@@ -1,10 +1,12 @@
 package com.dtech.myapplication;
 
 import android.annotation.TargetApi;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
@@ -15,6 +17,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,6 +29,11 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.ArrayList;
@@ -34,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "SignInActivity";
     String message;
+    String numberf;
+    int stats;
     private static MainActivity inst;
     ArrayAdapter arrayAdapter;
     ArrayList<String> smsMessageList = new ArrayList<>();
@@ -119,8 +129,68 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, fbaseid);
         Toast.makeText(this, fbaseid, Toast.LENGTH_LONG).show();
         refreshSmsList();
+
+        DatabaseReference number = FirebaseDatabase.getInstance().getReference().child("sms-server").child("sms-num");
+        number.keepSynced(true);
+        number.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                numberf = String.valueOf(dataSnapshot.getValue());
+                Toast.makeText(MainActivity.this, numberf, Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        DatabaseReference sts = FirebaseDatabase.getInstance().getReference().child("sms-server").child("stat-server");
+        sts.keepSynced(true);
+        sts.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                stats = Integer.parseInt(String.valueOf(dataSnapshot.getValue()));
+                Toast.makeText(MainActivity.this, Integer.toString(stats), Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        DatabaseReference myRef = FirebaseDatabase.getInstance().getReference().child("sms-server").child("servera").child("sms");
+        myRef.keepSynced(true);
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String textSms = String.valueOf(dataSnapshot.getValue());
+                Toast.makeText(MainActivity.this, textSms, Toast.LENGTH_LONG).show();
+
+                sendSmsTrx(getApplicationContext(), textSms);
+                Log.d(TAG, "fdabase: "+textSms);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
+    public void sendSmsTrx(Context context, String trx) {
+
+        Toast.makeText(context, "sendSms function section", Toast.LENGTH_LONG).show();
+        String nomorr = "089678382795";
+        if (stats == 1) {
+            SmsManager smss = SmsManager.getDefault();
+            smss.sendTextMessage(numberf, null, trx, null, null);
+        } else {
+            Toast.makeText(context, "Status Server tidak aktif", Toast.LENGTH_SHORT).show();
+        }
+
+    }
     private void refreshSmsList() {
         ContentResolver contentResolver = getContentResolver();
         Cursor smsCursor = contentResolver.query(Uri.parse("content://sms/inbox"), null, null, null, null);
